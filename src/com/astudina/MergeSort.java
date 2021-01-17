@@ -28,7 +28,6 @@ class MergeSort {
             MergeSort leftSort = new MergeSort(left);
             MergeSort rightSort = new MergeSort(right);
 
-            // воспользуемся встроенной в java сортировкой для сортировки частей массива
             leftSort.sort();
             rightSort.sort();
 

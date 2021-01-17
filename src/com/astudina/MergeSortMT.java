@@ -1,10 +1,12 @@
 package com.astudina;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MergeSortMT extends Thread {
     private int[] unsorted, sorted;
 
     // ограничиваем максимальное количество запускаемых потоков
-    private static final int MAX_THREADS = 100;
+    private static final int MAX_THREADS = 8;
 
     MergeSortMT(int[] unsorted) {
         this.unsorted = unsorted;
@@ -46,7 +48,6 @@ public class MergeSortMT extends Thread {
                 MergeSort leftSort = new MergeSort(left);
                 MergeSort rightSort = new MergeSort(right);
 
-                // воспользуемся встроенной в java сортировкой для сортировки частей массива
                 leftSort.sort();
                 rightSort.sort();
 
