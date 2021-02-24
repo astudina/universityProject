@@ -1,18 +1,19 @@
 package com.astudina;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MergeSortMT extends Thread {
     private int[] unsorted, sorted;
 
     // ограничиваем максимальное количество запускаемых потоков
     private static final int MAX_THREADS = 8;
+    private static Integer activeNow = 0;
 
     MergeSortMT(int[] unsorted) {
         this.unsorted = unsorted;
     }
 
     public void run() {
+        incCount();
         int middle;
         int[] left, right;
 
@@ -28,7 +29,7 @@ public class MergeSortMT extends Thread {
             System.arraycopy(unsorted, middle, right, 0, unsorted.length - middle);
 
             // Пока не превысили максимальное количество потоков, запускаем рекурсивно новые потоки на 2-х частях
-            if (activeCount() < MAX_THREADS) {
+            if (actualActiveCount() < MAX_THREADS) {
                 MergeSortMT leftSort = new MergeSortMT(left);
                 MergeSortMT rightSort = new MergeSortMT(right);
                 leftSort.start();
@@ -40,6 +41,7 @@ public class MergeSortMT extends Thread {
                     rightSort.join();
                     sorted = MergeSort.merge(leftSort.getSorted(), rightSort.getSorted());
                 } catch (InterruptedException e) {
+                    decCount();
                     e.printStackTrace();
                 }
 
@@ -55,9 +57,22 @@ public class MergeSortMT extends Thread {
             }
 
         }
+        decCount();
     }
 
-    int[] getSorted() {
+    private int[] getSorted() {
         return sorted;
+    }
+
+    private synchronized static void incCount() {
+        activeNow++;
+    }
+
+    private synchronized static void decCount() {
+        activeNow--;
+    }
+
+    private synchronized static Integer actualActiveCount() {
+        return activeNow;
     }
 }
