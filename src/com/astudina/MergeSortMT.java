@@ -29,7 +29,7 @@ public class MergeSortMT extends Thread {
             System.arraycopy(unsorted, middle, right, 0, unsorted.length - middle);
 
             // Пока не превысили максимальное количество потоков, запускаем рекурсивно новые потоки на 2-х частях
-            if (actualActiveCount() < MAX_THREADS) {
+            if (comp()) {
                 MergeSortMT leftSort = new MergeSortMT(left);
                 MergeSortMT rightSort = new MergeSortMT(right);
                 leftSort.start();
@@ -64,15 +64,19 @@ public class MergeSortMT extends Thread {
         return sorted;
     }
 
-    private synchronized static void incCount() {
+    private static synchronized void incCount() {
         activeNow++;
     }
 
-    private synchronized static void decCount() {
+    private static synchronized void decCount() {
         activeNow--;
     }
 
-    private synchronized static Integer actualActiveCount() {
+    private static synchronized Integer actualActiveCount() {
         return activeNow;
+    }
+
+    private static synchronized boolean comp() {
+        return actualActiveCount() < MAX_THREADS;
     }
 }
